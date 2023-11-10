@@ -43,9 +43,19 @@ interface IZupassGovernor {
   /// returns current number of votes FOR current proposal
   function currentProposalForVotes() external view returns (uint);
 
+  /// returns address which makde current proposal
+  function currentProposer() external view returns (address);
+
+  /// returns zero if user hasn't voted for current proposal, 1 if for, -1 if against
+  function userVotesForProposal(address user) external view returns (int);
+
   /// execute the current proposal if it is valid
   /// only admin can call 
   function executeProposal() external;
+
+  function voteFor() external;
+
+  function voteAgainst() external;
 
   // returns num registered users
   function numUsers() external returns (uint);

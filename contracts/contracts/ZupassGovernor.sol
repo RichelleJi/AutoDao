@@ -14,7 +14,9 @@ contract ZupassGovernor is IZupassGovernor, GovernorBravoDelegateStorageV1, Gove
 
     mapping(address => uint) public users;
     //mapping(uint => Proposal) proposals; 
-    
+    mapping(address => int) votes;
+
+
     constructor(string memory _prompt) {
       admin = msg.sender;
       prompt = _prompt; 
@@ -53,6 +55,22 @@ contract ZupassGovernor is IZupassGovernor, GovernorBravoDelegateStorageV1, Gove
 
     function currentProposalForVotes() public view returns (uint) {
       return 3;
+    }
+
+    function currentProposer() public view returns (address) {
+      return 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045;
+    }
+
+    function userVotesForProposal(address user) public view returns (int) {
+      return -1;
+    }
+   
+    function voteFor() external {
+      votes[msg.sender] = 1;            
+    }
+
+    function voteAgainst() external {
+      votes[msg.sender] = -1;
     }
 
     function executeProposal() external {
