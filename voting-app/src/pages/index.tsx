@@ -3,6 +3,7 @@ import Head from "next/head";
 import { useCallback, useEffect, useState } from "react";
 import { useZuAuth } from "zuauth";
 import { Profile } from "./profile";
+import { ethers } from "ethers";
 
 export default function Home() {
   const { authenticate, pcd } = useZuAuth();
