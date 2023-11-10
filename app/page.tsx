@@ -10,7 +10,6 @@ import Footer from '../components/Footer';
 import Github from '../components/GitHub';
 import Header from '../components/Header';
 import RadioGroupStars from '../components/RadioGroupStars';
-import {phaseTwoPreflopPrompt} from "../lib/prompts";
 
 
 export default function Page() {
@@ -24,20 +23,6 @@ export default function Page() {
   };
   const [userFeedbackId, setUserFeedbackId] = useState(null);
   const [userFeedback, setUserFeedback] = useState("");
-  const insertGptInteraction = async (fullMessage: string) => {
-    const reqData = {
-      userInput: input,
-      promptVersion: phaseTwoPreflopPrompt.version,
-      gptOutput: fullMessage,
-    };
-    return await fetch('/api/gpt-output', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(reqData),
-    })
-  }
 
   const {input, handleInputChange, handleSubmit, isLoading, messages} =
     useChat({
@@ -56,12 +41,6 @@ export default function Page() {
           theme: "light",
         });
       },
-      async onFinish(fullMessage) {
-        const res = await insertGptInteraction(fullMessage.content);
-
-        const result = await res.json();
-        setUserFeedbackId(result.id);
-      }
     });
 
   const onSubmit = (e: any) => {
@@ -196,7 +175,7 @@ export default function Page() {
                   }}
                   key={userHandHistory}
                 >
-                <span className="text-slate-500">Your hand history:</span>
+                <span className="text-slate-500">Your proposal:</span>
                   <p>{userHandHistory}</p>
                 </div>
                 <div
@@ -209,7 +188,7 @@ export default function Page() {
                   }}
                   key={generatedStrategy}
                 >
-                  <span className="text-slate-500">Your strategy:</span>
+                  <span className="text-slate-500">Dao's decision:</span>
                   <p>{generatedStrategy}</p>
                 </div>
               </div>
