@@ -4,9 +4,37 @@ pragma solidity ^0.8.10;
 
 interface IZupassGovernor {
 
-  /// can only be called by Admin, j
+  /// can only be called by admin, returns true if user is added to registry
   function register(address user) external returns (bool);
 
+  /// returns true if user is in registry
+  function isInRegistry(address user) external view returns (bool);
+
+  /// returns true if proposal is successfully enqueued
+  function propose(string calldata _newprompt) external returns (bool);
+
+  /// returns current prompt
+  function currentPrompt() external view returns (string memory);
+
+  /// returns currently proposed prompt
+  function proposedPrompt() external view returns (string memory);
+
+  /// returns deadline for voting for current proposal as timestamp
+  function proposalDeadline() external view returns (uint);
+
+  /// returns current number of votes cast FOR or AGAINST current proposal
+  function currentProposalVotes() external view returns (uint);
+
+  /// returns current number of votes FOR current proposal
+  function currentProposalForVotes() external view returns (uint);
+
+  /// execute the current proposal if it is valid
+  /// only admin can call 
+  function executeProposal() external returns (bool);
+
+  /// vote quorom required for proposal to be valid / 10**6
+  /// i.e., 4 * 10**4 means 4% quorom
+  function quorom() external view returns (uint);
 }
 
 
