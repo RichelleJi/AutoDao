@@ -1,7 +1,6 @@
 import { OpenAIStream, StreamingTextResponse } from 'ai';
 import {getPrompt} from "../../../lib/prompts";
 import OpenAI from 'openai';
-import { NextResponse } from 'next/server'
 
 interface Message {
     role: 'system' | 'user';
@@ -20,26 +19,22 @@ export const runtime = 'edge';
 
 export async function POST(req: Request) {
   const { messages } = await req.json();
-  const hand = messages[messages.length - 1].content
+  const proposal = messages[messages.length - 1].content
 
-  console.log('hand first entered', hand)
+  console.log('proposal first entered', proposal)
 
-  getGptTextRes(getPrompt.prompt, hand)
     //when the records are clean and ready to be saved
 
-
   // @ts-ignore
-  const preflopeFinalPrompt = getPreflopeFinalPrompt(data, collectVarRes);
-
   const gptStreamRes = await getGptStreamRes(
-    preflopeFinalPrompt,
-    phaseTwoPreflopPrompt.version,
-    hand
+    getPrompt.prompt,
+    getPrompt.version,
+    proposal
   )
   return new StreamingTextResponse(gptStreamRes);
 }
 
-function gptReqBody(prompt: string, hand: string, stream=false): ApiPayload {
+function gptReqBody(prompt: string, proposal: string, stream=false): ApiPayload {
   return {
     model: 'gpt-4',
     messages: [
@@ -49,7 +44,7 @@ function gptReqBody(prompt: string, hand: string, stream=false): ApiPayload {
       },
       {
         role: 'user',
-        content: hand
+        content: proposal
       },
     ],
     temperature: 1,
@@ -57,15 +52,6 @@ function gptReqBody(prompt: string, hand: string, stream=false): ApiPayload {
   };
 }
 
-// @ts-ignore
-async function getGptTextRes(prompt: string, hand: string): string {
-  // @ts-ignore
-  const response  = await openai.chat.completions.create(gptReqBody(prompt, hand));
-
-  // @ts-ignore
-  return response!.choices[0].message.content;
-
-}
 
 async function getGptStreamRes(prompt: string, promptVersion: string, hand: string) {
   let chatCompletionRequest = gptReqBody(prompt, hand, true);
