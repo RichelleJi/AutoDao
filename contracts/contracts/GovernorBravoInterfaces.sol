@@ -4,14 +4,49 @@ pragma solidity ^0.8.10;
 
 interface IZupassGovernor {
 
+
+    struct Proposal {
+        /// @notice Unique id for looking up a proposal
+        uint id;
+
+        /// @notice Creator of the proposal
+        address proposer;
+
+        /// @notice The timestamp that the proposal will be available for execution, set once the vote succeeds
+        uint eta;
+
+
+        /// @notice The block at which voting begins: holders must delegate their votes prior to this block
+        uint startBlock;
+
+        /// @notice The block at which voting ends: votes must be cast prior to this block
+        uint endBlock;
+
+        /// @notice Current number of votes in favor of this proposal
+        uint forVotes;
+
+        /// @notice Current number of votes in opposition to this proposal
+        uint againstVotes;
+
+        /// @notice Current number of votes for abstaining for this proposal
+        uint abstainVotes;
+
+        /// @notice Flag marking whether the proposal has been canceled
+        bool canceled;
+
+        /// @notice Flag marking whether the proposal has been executed
+        bool executed;
+  }
+
+
   /// can only be called by admin, returns true if user is added to registry
-  function register(address user) external returns (bool);
+  function register(address user, uint semaphoreID) external returns (bool);
 
   /// returns true if user is in registry
   function isInRegistry(address user) external view returns (bool);
 
-  /// returns true if proposal is successfully enqueued
-  function propose(string calldata _newprompt) external returns (bool);
+  /// returns proposal id if proposal is successfully enqueued else reverts
+  function propose(string calldata _newprompt) external returns (uint id);
 
   /// returns current prompt
   function currentPrompt() external view returns (string memory);
@@ -35,6 +70,9 @@ interface IZupassGovernor {
   /// vote quorom required for proposal to be valid / 10**6
   /// i.e., 4 * 10**4 means 4% quorom
   function quorom() external view returns (uint);
+
+  /// returns a previous proposal by its id
+  function getProposal(uint id) external view returns (Proposal memory p);
 }
 
 
