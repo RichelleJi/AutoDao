@@ -7,8 +7,8 @@ import "@nomicfoundation/hardhat-toolbox";
 
 const config: HardhatUserConfig = {
   networks: {
-    georli: {
-      url: `https://georli.infura.io/v3/${process.env.INFURA_KEY}`,
+    goerli: {
+      url: `https://goerli.infura.io/v3/${process.env.INFURA_KEY}`,
       accounts: [process.env.PRIVATE_KEY || ''],
     },
   },

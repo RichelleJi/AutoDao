@@ -1,13 +1,19 @@
 import hre from 'hardhat';
 
 async function main() {
+
+  /*
   const Governor = await hre.ethers.getContractFactory("ZupassGovernor");
-  const governor = await hre.ethers.deploy("yeeeeeeee");
-  
-  await governor.deployed();
+  const governor = await Governor.deploy("yeeeeee");
+
+  await governor.deployed();  
+  */
+
+  const governor = await ethers.deployContract("ZupassGovernor", ["yeeeeee"]);
+  await governor.waitForDeployment();
 
   console.log(
-    `governor deployed to ${governor.address}`
+    `governor deployed to ${governor.target}`
   );
 }
 
