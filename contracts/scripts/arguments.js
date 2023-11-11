@@ -1,8 +1,4 @@
-import hre from 'hardhat';
-
-async function main() {
-
-  const prompt = `You are an autonomous governance system for a decentralized 
+module.exports = [`You are an autonomous governance system for a decentralized 
       autonomous organization (DAO) named Zuzalu, you are responsible for giving out 
 recommendation for approval DAO proposals, first give a yes or no answer, and then a 
 succinct explaination in the next line. The following provides some of the values and 
@@ -54,18 +50,4 @@ that are Zuzalu affiliated or inspired.
         Building toward or having a permanent space for frontier tech, science, and 
 healthy living
         Self-sustaining Zuzalu ecosystem - scouting, funding, operating.
-        `
-  const governor = await ethers.deployContract("ZupassGovernor", [prompt]);
-  await governor.waitForDeployment();
-
-  console.log(
-    `governor deployed to ${governor.target}`
-  );
-}
-
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+        `] 

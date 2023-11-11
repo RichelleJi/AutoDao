@@ -23,7 +23,15 @@ contract ZupassGovernor is IZupassGovernor {
       prompt = _prompt; 
     }
 
+    function isInRegistry(address user) public view returns (bool) {
+      uint semaphoreID = users[user];
+
+      return (semaphoreID > 0);
+    }
+
+
     function propose(string calldata _newPrompt) external returns (uint) {
+      require(isInRegistry(msg.sender), "non Zupass holders cannot create proposals");
       require(!_currentProposalLive(), "cannot create new proposal while current is being voted on");      
       if (_currentProposalExecutable()) {
         // execute the current proposal if its valid before starting vote on new one
@@ -32,6 +40,7 @@ contract ZupassGovernor is IZupassGovernor {
 
       uint id = currentProposal.id + 1;
 
+      proposals[id].id = id;
       proposals[id].proposer = msg.sender;
       proposals[id].proposedPrompt = _newPrompt;
       proposals[id].startTime = block.timestamp;
@@ -41,7 +50,6 @@ contract ZupassGovernor is IZupassGovernor {
       proposals[id].numUsers = numUsers;
       proposals[id].executed = false;
 
-      proposals[id].id = id + 1;
 
       currentProposal = proposals[id];
 
@@ -56,12 +64,6 @@ contract ZupassGovernor is IZupassGovernor {
       // so users added after a proposal is live for voting can't vote on that proposal
       checkpoints[userAddress] = currentProposal.id;
       numUsers = numUsers + 1;
-    }
-
-    function isInRegistry(address user) external view returns (bool) {
-      uint semaphoreID = users[user];
-
-      return (semaphoreID > 0);
     }
 
     function proposedPrompt() public view returns (string memory) {
@@ -104,7 +106,9 @@ contract ZupassGovernor is IZupassGovernor {
       require(checkpoints[msg.sender] < currentProposal.id, "cannot vote for proposals made before registration"); 
       if (votes[currentProposal.id][msg.sender] == -1) {
         currentProposal.againstVotes -= 1;
-      } else if (votes[currentProposal.id][msg.sender] == 0) {
+      } 
+      
+      if (votes[currentProposal.id][msg.sender] != 1) {
         currentProposal.forVotes += 1;
       }
 
@@ -115,7 +119,9 @@ contract ZupassGovernor is IZupassGovernor {
       require(checkpoints[msg.sender] < currentProposal.id, "cannot vote on proposals made before registration"); 
       if (votes[currentProposal.id][msg.sender] == 1) {
         currentProposal.forVotes -= 1;
-      } else if (votes[currentProposal.id][msg.sender] == 0) {
+      } 
+      
+      if (votes[currentProposal.id][msg.sender] != -1) {
         currentProposal.againstVotes += 1;
       }
 
@@ -135,12 +141,12 @@ contract ZupassGovernor is IZupassGovernor {
     }
 
     function _quorumReached() internal view returns (bool) {
-      uint quorum_num = QUORUM * numUsers / 10**6;
+      uint quorum_num = QUORUM * currentProposal.numUsers / 10**6;
       return (currentProposalVotes() > quorum_num);
     }
 
     function _currentProposalExecutable() internal view returns (bool) {
-      return (_quorumReached() && !currentProposal.executed);
+      return (_quorumReached() && !currentProposal.executed && currentProposal.forVotes > currentProposal.againstVotes);
     }
 
     function _currentProposalLive() internal view returns (bool) {
