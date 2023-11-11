@@ -2,6 +2,10 @@
 
 
 package-lock.json
+yarn.lock
+
+*swp
+
 
 # dependencies
 /node_modules
