@@ -56,8 +56,13 @@ export function Profile({ semaphoreId }: { semaphoreId: string }) {
       {!registered && (
         <button
           className="bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded"
-          // onClick={() => axios.post("/api/register", { semaphoreId, address: wallet.address })}
-          onClick={() => setRegistered(true)}
+          onClick={() => {
+            setRegistered(true);
+            axios.post("/api/register", {
+              semaphoreId,
+              address: wallet.address,
+            });
+          }}
         >
           Register
         </button>
