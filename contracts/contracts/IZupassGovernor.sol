@@ -6,11 +6,12 @@ struct Proposal {
         uint id;
 
         address proposer;
+        string proposedPrompt;
         uint startTime;
         uint endTime;
         uint forVotes;
         uint againstVotes;
-        bool canceled;
+        uint numUsers;
         bool executed;
   }
 
@@ -18,6 +19,7 @@ struct Proposal {
 interface IZupassGovernor {
 
 
+  function admin() external view returns (address);
 
   /// can only be called by admin
   function register(address user, uint semaphoreID) external;
@@ -26,7 +28,7 @@ interface IZupassGovernor {
   function isInRegistry(address user) external view returns (bool);
 
   /// returns proposal id if proposal is successfully enqueued else reverts
-  function propose(string calldata _newprompt) external returns (uint id);
+  function propose(string calldata _newprompt) external returns (uint);
 
   /// returns current prompt
   function prompt() external view returns (string memory);
@@ -35,7 +37,7 @@ interface IZupassGovernor {
   function proposedPrompt() external view returns (string memory);
 
   /// returns deadline for voting for current proposal as timestamp
-  function proposalDeadline() external view returns (uint);
+  function currentProposalDeadline() external view returns (uint);
 
   /// returns current number of votes cast FOR or AGAINST current proposal
   function currentProposalVotes() external view returns (uint);
@@ -43,15 +45,21 @@ interface IZupassGovernor {
   /// returns current number of votes FOR current proposal
   function currentProposalForVotes() external view returns (uint);
 
+  /// returns current number of votes AGAINST current proposal
+  function currentProposalAgainstVotes() external view returns (uint);
+
   /// returns address which makde current proposal
   function currentProposer() external view returns (address);
 
+  /// returns zero if user hasn't voted for a proposal, 1 if for, -1 if against
+  function userVotesForProposal(address user, uint proposalID) external view returns (int);
+
   /// returns zero if user hasn't voted for current proposal, 1 if for, -1 if against
-  function userVotesForProposal(address user) external view returns (int);
+  function userVotesForCurrentProposal(address user) external view returns (int);
+
 
   /// execute the current proposal if it is valid
-  /// only admin can call 
-  function executeProposal() external;
+  function executeCurrentProposal() external;
 
   function voteFor() external;
 
@@ -140,9 +148,6 @@ contract GovernorBravoDelegateStorageV1 {
 
     /// @notice The address of the Compound governance token
     CompInterface public comp;
-
-    /// @notice The official record of all proposals ever proposed
-    mapping (uint => Proposal) public proposals;
 
     /// @notice The latest proposal for each proposer
     mapping (address => uint) public latestProposalIds;
